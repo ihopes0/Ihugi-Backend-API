@@ -4,13 +4,25 @@ using Ihugi.Domain.Primitives;
 
 namespace Ihugi.Domain.Entities;
 
-// TODO: XML docs
+/// <summary>
+/// Пользователь
+/// </summary>
 public sealed class User : AggregateRoot
 {
+    /// <summary>
+    /// Конструктор для EF Core
+    /// </summary>
     private User()
     {
     }
 
+    /// <summary>
+    /// .ctor
+    /// </summary>
+    /// <param name="id">Идентификатор пользователя</param>
+    /// <param name="name">Имя пользователя</param>
+    /// <param name="password">Пароль пользователя</param>
+    /// <param name="email">Электронная почта пользователя</param>
     private User(
         Guid id,
         string name,
@@ -24,14 +36,39 @@ public sealed class User : AggregateRoot
         Email = email;
     }
 
-
+    /// <summary>
+    /// Имя
+    /// </summary>
     public string Name { get; private set; }
+    
+    /// <summary>
+    /// Пароль
+    /// </summary>
     public string Password { get; private set; }
+    
+    /// <summary>
+    /// Электронная почта
+    /// </summary>
     public string Email { get; private set; }
+    
+    /// <summary>
+    /// Чаты, в которых состоит пользователь
+    /// </summary>
     public IReadOnlyCollection<Chat> Chats { get; set; } = [];
 
+    /// <summary>
+    /// Сообщения пользователя
+    /// </summary>
     public IReadOnlyCollection<Message> Messages { get; set; } = [];
 
+    /// <summary>
+    /// Статичный метод для создания экземпляра User
+    /// </summary>
+    /// <param name="id">Идентификатор пользователя</param>
+    /// <param name="name">Имя пользователя</param>
+    /// <param name="password">Пароль пользователя</param>
+    /// <param name="email">Электронная почта пользователя</param>
+    /// <returns>Экземпляр User</returns>
     public static User Create(
         Guid id,
         string name,
@@ -51,6 +88,12 @@ public sealed class User : AggregateRoot
         return user;
     }
 
+    /// <summary>
+    /// Метод для обновления пользователя
+    /// </summary>
+    /// <param name="name">Имя</param>
+    /// <param name="password">Пароль</param>
+    /// <param name="email">Электронная почта</param>
     public void Update(string name, string password, string email)
     {
         Name = name;
