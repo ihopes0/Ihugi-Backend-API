@@ -3,7 +3,7 @@
     image: redis
     restart: always
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
   
   ihugi.mysql:
     image: mysql
@@ -12,9 +12,9 @@
       - ./init.sql:/docker-entrypoint-initdb.d/setup.sql
       - db_data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: yourRootPass
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     ports:
-      - "1234:3306"
+      - "${DB_PORT}:3306"
 
 volumes:
   db_data:
