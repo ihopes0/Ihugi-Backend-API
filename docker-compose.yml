@@ -1,0 +1,21 @@
+﻿services:
+  ihugi.webapi.redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+  
+  ihugi.mysql:
+    image: mysql
+    restart: always
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/setup.sql
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: yourRootPass
+    ports:
+      - "1234:3306"
+
+volumes:
+  db_data:
+    
