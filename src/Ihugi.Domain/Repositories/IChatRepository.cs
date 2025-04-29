@@ -2,7 +2,9 @@ using Ihugi.Domain.Entities.Chats;
 
 namespace Ihugi.Domain.Repositories;
 
-// TODO: XML docs
+/// <summary>
+/// Репозиторий сущности Chat
+/// </summary>
 public interface IChatRepository : IRepository<Chat>
 {
 }

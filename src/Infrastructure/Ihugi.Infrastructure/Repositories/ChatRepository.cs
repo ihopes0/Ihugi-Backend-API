@@ -3,10 +3,13 @@ using Ihugi.Domain.Repositories;
 
 namespace Ihugi.Infrastructure.Repositories;
 
-// TODO: XML docs
-// TODO: Подумать поменять ли с дженерик репозитория на конкретные
+/// <inheritdoc cref="IChatRepository"/>
 internal class ChatRepository : GenericRepository<Chat>, IChatRepository
 {
+    /// <summary>
+    /// .ctor
+    /// </summary>
+    /// <param name="context">Контекст БД</param>
     public ChatRepository(AppDbContext context) : base(context)
     {
     }

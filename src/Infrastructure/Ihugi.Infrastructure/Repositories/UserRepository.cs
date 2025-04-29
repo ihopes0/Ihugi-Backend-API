@@ -4,14 +4,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ihugi.Infrastructure.Repositories;
 
-// TODO: XML docs
-// TODO: Подумать поменять ли с дженерик репозитория на конкретные
+/// <inheritdoc cref="IUserRepository"/>
 internal class UserRepository : GenericRepository<User>, IUserRepository
 {
+    /// <summary>
+    /// .ctor
+    /// </summary>
+    /// <param name="context">Контекст БД</param>
     public UserRepository(AppDbContext context) : base(context)
     {
     }
     
+    /// <inheritdoc />
     public async Task<bool> IsEmailUniqueAsync(string email, CancellationToken cancellationToken)
     {
         var user = await DbSet.Where(u => u.Email == email).FirstOrDefaultAsync(cancellationToken);
