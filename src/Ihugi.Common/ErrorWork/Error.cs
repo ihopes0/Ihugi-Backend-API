@@ -1,19 +1,39 @@
 namespace Ihugi.Common.ErrorWork;
 
-// TODO: XML docs
+/// <summary>
+/// Ошибка. Ипользуется для отображения ошибки в классе Result
+/// </summary>
 public class Error : IEquatable<Error>
 {
+    /// <summary>
+    /// Отображает отсутствие ошибки
+    /// </summary>
     public static readonly Error None = new(String.Empty, String.Empty);
+    
+    /// <summary>
+    /// Ошибка для null значения
+    /// </summary>
     public static readonly Error NullValue = new("Error.NullValue", "The specified value is null.");
 
+    /// <summary>
+    /// .ctor
+    /// </summary>
+    /// <param name="code">Код ошибки</param>
+    /// <param name="message">Сообщение ошибки</param>
     public Error(string code, string message)
     {
         Code = code;
         Message = message;
     }
 
+    /// <summary>
+    /// Сообщение ошибки
+    /// </summary>
     public string Message { get; }
 
+    /// <summary>
+    /// Код ошибки
+    /// </summary>
     public string Code { get; }
 
     public static implicit operator string(Error error) => error.Code;
