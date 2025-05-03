@@ -1,13 +1,20 @@
+using System.Net.Mime;
+using Ihugi.Application.UseCases.Chats;
+using Ihugi.Application.UseCases.Chats.Commands.CreateChat;
 using Ihugi.Application.UseCases.Chats.Queries.GetChatById;
 using Ihugi.Application.UseCases.Chats.Queries.GetChats;
 using Ihugi.Presentation.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Uri = System.Uri;
 
 namespace Ihugi.Presentation.Controllers;
 
 // TODO: XML docs
 [Route("api/chats")]
+[Produces(MediaTypeNames.Application.Json)]
+[Consumes(MediaTypeNames.Application.Json)]
+[ApiController]
 public class ChatsController : ApiController
 {
     public ChatsController(ISender sender) : base(sender)
@@ -45,11 +52,18 @@ public class ChatsController : ApiController
         return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
     }
     
-    // TODO: Имплементировать POST chats ручку для создания ресурса
+    /// <summary>
+    /// Создать чат
+    /// </summary>
+    /// <param name="request">Тело запроса</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     [HttpPost]
-    public Task<IActionResult> CreateChat(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ChatResponse), 200)]
+    public async Task<IActionResult> CreateChat([FromBody] CreateChatCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var result = await Sender.Send(request, cancellationToken);
+
+        return Ok(result.Value);
     }
     
     // TODO: Имплементировать DELETE chats/{id} ручку
