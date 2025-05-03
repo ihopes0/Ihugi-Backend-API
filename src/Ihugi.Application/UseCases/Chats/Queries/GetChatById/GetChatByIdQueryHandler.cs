@@ -18,7 +18,7 @@ public sealed class GetChatByIdQueryHandler : IQueryHandler<GetChatByIdQuery, Ch
     {
         var chat = await _chatRepository.GetByIdAsync(request.Id, cancellationToken);
 
-        if (chat == null)
+        if (chat is null)
         {
             return Result.Failure<ChatResponse>(DomainErrors.Chat.NotFound);
         }

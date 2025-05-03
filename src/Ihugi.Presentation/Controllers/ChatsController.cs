@@ -2,12 +2,13 @@ using System.Net.Mime;
 using Ihugi.Application.UseCases.Chats;
 using Ihugi.Application.UseCases.Chats.Commands.CreateChat;
 using Ihugi.Application.UseCases.Chats.Commands.DeleteChatById;
+using Ihugi.Application.UseCases.Chats.Commands.UpdateChatPut;
 using Ihugi.Application.UseCases.Chats.Queries.GetChatById;
 using Ihugi.Application.UseCases.Chats.Queries.GetChats;
+using Ihugi.Common.ErrorWork;
 using Ihugi.Presentation.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Uri = System.Uri;
 
 namespace Ihugi.Presentation.Controllers;
 
@@ -21,7 +22,7 @@ public class ChatsController : ApiController
     public ChatsController(ISender sender) : base(sender)
     {
     }
-    
+
     /// <summary>
     /// Получить все чаты
     /// </summary>
@@ -36,7 +37,7 @@ public class ChatsController : ApiController
 
         return Ok(result.Value);
     }
-    
+
     /// <summary>
     /// Получить чат по Id
     /// </summary>
@@ -52,7 +53,7 @@ public class ChatsController : ApiController
 
         return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
     }
-    
+
     /// <summary>
     /// Создать чат
     /// </summary>
@@ -60,13 +61,14 @@ public class ChatsController : ApiController
     /// <param name="cancellationToken">Токен отмены операции</param>
     [HttpPost]
     [ProducesResponseType(typeof(ChatResponse), 200)]
-    public async Task<IActionResult> CreateChat([FromBody] CreateChatCommand request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateChat([FromBody] CreateChatCommand request,
+        CancellationToken cancellationToken)
     {
         var result = await Sender.Send(request, cancellationToken);
 
         return Ok(result.Value);
     }
-    
+
     /// <summary>
     /// Удалить чат
     /// </summary>
@@ -82,14 +84,29 @@ public class ChatsController : ApiController
 
         var result = await Sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? Ok() : NoContent();
+        return result.IsSuccess ? Ok(result.Value) : NoContent();
     }
-    
-    // TODO: Имплементировать PUT chats/{id} ручку
+
+
+    /// <summary>
+    /// Обновить пользователя
+    /// </summary>
+    /// <param name="id">Идентификатор пользователя</param>
+    /// <param name="request">Тело запроса</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     [HttpPut]
     [Route("{id:guid}")]
-    public Task<IActionResult> UpdateChatPut(Guid id, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ChatResponse), 200)]
+    [ProducesResponseType(typeof(Error), 404)]
+    public async Task<IActionResult> UpdateChatPut(
+        Guid id,
+        [FromBody] UpdateChatPutRequest request,
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var command = new UpdateChatPutCommand(id, request.Name);
+
+        var result = await Sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
     }
 }

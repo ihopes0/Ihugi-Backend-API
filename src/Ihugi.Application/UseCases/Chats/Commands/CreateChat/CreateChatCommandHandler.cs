@@ -18,7 +18,7 @@ public class CreateChatCommandHandler : ICommandHandler<CreateChatCommand, ChatR
 
     public async Task<Result<ChatResponse>> Handle(CreateChatCommand request, CancellationToken cancellationToken)
     {
-        var chat = new Chat(
+        var chat = Chat.Create(
             Guid.NewGuid(),
             request.Name);
 
