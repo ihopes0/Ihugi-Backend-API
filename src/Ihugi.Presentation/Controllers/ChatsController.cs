@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using Ihugi.Application.UseCases.Chats;
 using Ihugi.Application.UseCases.Chats.Commands.CreateChat;
+using Ihugi.Application.UseCases.Chats.Commands.DeleteChatById;
 using Ihugi.Application.UseCases.Chats.Queries.GetChatById;
 using Ihugi.Application.UseCases.Chats.Queries.GetChats;
 using Ihugi.Presentation.Abstractions;
@@ -31,25 +32,25 @@ public class ChatsController : ApiController
     {
         var query = new GetChatsQuery();
 
-        var response = await Sender.Send(query, cancellationToken);
+        var result = await Sender.Send(query, cancellationToken);
 
-        return Ok(response.Value);
+        return Ok(result.Value);
     }
     
     /// <summary>
     /// Получить чат по Id
     /// </summary>
-    /// <param name="chatId">Идентификатор чата</param>
+    /// <param name="id">Идентификатор чата</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     [HttpGet]
-    [Route("{chatId:guid}")]
-    public async Task<IActionResult> GetChatById(Guid chatId, CancellationToken cancellationToken)
+    [Route("{id:guid}")]
+    public async Task<IActionResult> GetChatById(Guid id, CancellationToken cancellationToken)
     {
-        var query = new GetChatByIdQuery(chatId);
+        var query = new GetChatByIdQuery(id);
 
-        var response = await Sender.Send(query, cancellationToken);
+        var result = await Sender.Send(query, cancellationToken);
 
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
     }
     
     /// <summary>
@@ -66,12 +67,22 @@ public class ChatsController : ApiController
         return Ok(result.Value);
     }
     
-    // TODO: Имплементировать DELETE chats/{id} ручку
+    /// <summary>
+    /// Удалить чат
+    /// </summary>
+    /// <param name="id">Идентификатор чата</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     [HttpDelete]
     [Route("{id:guid}")]
-    public Task<IActionResult> DeleteChatById(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(DeletedChatResponse), 200)]
+    [ProducesResponseType(204)]
+    public async Task<IActionResult> DeleteChatById(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var command = new DeleteChatByIdCommand(id);
+
+        var result = await Sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? Ok() : NoContent();
     }
     
     // TODO: Имплементировать PUT chats/{id} ручку
