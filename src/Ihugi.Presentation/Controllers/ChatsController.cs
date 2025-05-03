@@ -1,3 +1,4 @@
+using Ihugi.Application.UseCases.Chats.Queries.GetChatById;
 using Ihugi.Application.UseCases.Chats.Queries.GetChats;
 using Ihugi.Presentation.Abstractions;
 using MediatR;
@@ -16,7 +17,7 @@ public class ChatsController : ApiController
     /// <summary>
     /// Получить все чаты
     /// </summary>
-    /// <param name="cancellationToken">Токен отмены</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     [HttpGet]
     [ProducesResponseType(typeof(ChatsResponse), 200)]
     public async Task<IActionResult> GetChats(CancellationToken cancellationToken)
@@ -28,12 +29,20 @@ public class ChatsController : ApiController
         return Ok(response.Value);
     }
     
-    // TODO: Имплементировать GET chats/{id} ручку
+    /// <summary>
+    /// Получить чат по Id
+    /// </summary>
+    /// <param name="chatId">Идентификатор чата</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     [HttpGet]
     [Route("{chatId:guid}")]
-    public Task<IActionResult> GetChatById(Guid chatId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetChatById(Guid chatId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var query = new GetChatByIdQuery(chatId);
+
+        var response = await Sender.Send(query, cancellationToken);
+
+        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
     }
     
     // TODO: Имплементировать POST chats ручку для создания ресурса
