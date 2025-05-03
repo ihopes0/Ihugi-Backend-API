@@ -91,7 +91,7 @@ public class ChatsController : ApiController
     /// <summary>
     /// Обновить пользователя
     /// </summary>
-    /// <param name="id">Идентификатор пользователя</param>
+    /// <param name="id">Идентификатор чата</param>
     /// <param name="request">Тело запроса</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     [HttpPut]

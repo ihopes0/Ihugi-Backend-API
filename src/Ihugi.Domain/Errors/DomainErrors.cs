@@ -26,4 +26,15 @@ public static class DomainErrors
             "Chat.NotFound",
             "Чата с таким ID не существует");
     }
+
+    public static class Message
+    {
+        public static readonly Error EmptyMessage = new Error(
+            "Message.EmptyMessage",
+            "Сообщение не может быть пустым или содержать только пробелы");
+
+        public static readonly Error NotFound = new Error(
+            "Message.NotFound",
+            "Сообщение с таким ID не найдено.");
+    }
 }
