@@ -16,9 +16,4 @@
       <ProjectReference Include="..\Ihugi.Domain\Ihugi.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Dtos\" />
-      <Folder Include="Interfaces\" />
-    </ItemGroup>
-
 </Project>

@@ -1,3 +1,4 @@
+using Ihugi.Application.UseCases.Chats.Queries.GetChats;
 using Ihugi.Presentation.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +12,20 @@ public class ChatsController : ApiController
     public ChatsController(ISender sender) : base(sender)
     {
     }
-
-    // TODO: Имплементировать GET chats ручку
+    
+    /// <summary>
+    /// Получить все чаты
+    /// </summary>
+    /// <param name="cancellationToken">Токен отмены</param>
     [HttpGet]
-    public Task<IActionResult> GetChats(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ChatsResponse), 200)]
+    public async Task<IActionResult> GetChats(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var query = new GetChatsQuery();
+
+        var response = await Sender.Send(query, cancellationToken);
+
+        return Ok(response.Value);
     }
     
     // TODO: Имплементировать GET chats/{id} ручку
