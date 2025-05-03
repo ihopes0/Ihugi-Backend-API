@@ -65,4 +65,26 @@ public class CacheService : ICacheService
 
         await Task.WhenAll(tasks);
     }
+
+    public async Task<IEnumerable<T>> GetByPrefixAsync<T>(string prefixKey,
+        CancellationToken cancellationToken = default)
+        where T : class
+    {
+        var connections = new ConcurrentBag<T>();
+
+        var tasks = _cacheKeys
+            .Where(k => k.StartsWith(prefixKey))
+            .Select(async k =>
+            {
+                var value = await GetAsync<T>(k, cancellationToken);
+                if (value != null)
+                {
+                    connections.Add(value);
+                }
+            });
+
+        await Task.WhenAll(tasks);
+
+        return connections;
+    }
 }

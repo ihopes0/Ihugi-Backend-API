@@ -1,3 +1,3 @@
-namespace Ihugi.WebApi.Dtos;
+namespace Ihugi.Application.Dtos;
 
-public record UserConnectionDto(string UserName, string ChatName);
+public sealed record UserConnectionDto(string UserName, string ChatName);

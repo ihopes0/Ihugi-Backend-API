@@ -1,4 +1,4 @@
-namespace Ihugi.WebApi.Interfaces;
+namespace Ihugi.Domain.Abstractions;
 
 public interface IChatClient
 {

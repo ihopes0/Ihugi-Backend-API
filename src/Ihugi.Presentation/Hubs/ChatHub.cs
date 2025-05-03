@@ -1,15 +1,16 @@
 using Ihugi.Application.Abstractions;
-using Ihugi.WebApi.Dtos;
-using Ihugi.WebApi.Interfaces;
+using Ihugi.Application.Dtos;
+using Ihugi.Common.Constants;
+using Ihugi.Domain.Abstractions;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Ihugi.WebApi.Hubs;
+namespace Ihugi.Presentation.Hubs;
 
 public class ChatHub : Hub<IChatClient>
 {
     private readonly ICacheService _cacheService;
 
-    private const string ChatConnectionPrefix = "ChatConnection-";
+    private const string ChatConnectionPrefix = SignalRConstants.ChatConnectionCachePrefix;
 
     public ChatHub(ICacheService cacheService)
     {

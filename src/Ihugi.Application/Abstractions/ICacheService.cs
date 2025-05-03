@@ -15,4 +15,7 @@ public interface ICacheService
     Task RemoveAsync(string key, CancellationToken cancellationToken = default);
 
     Task RemoveByPrefixAsync(string prefixKey, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<T>> GetByPrefixAsync<T>(string prefixKey, CancellationToken cancellationToken = default)
+        where T: class;
 }

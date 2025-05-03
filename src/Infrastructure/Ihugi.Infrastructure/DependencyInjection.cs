@@ -1,6 +1,8 @@
 using Ihugi.Application.Abstractions;
+using Ihugi.Domain.Abstractions;
 using Ihugi.Domain.Repositories;
 using Ihugi.Infrastructure.Caching;
+using Ihugi.Infrastructure.RealTime;
 using Ihugi.Infrastructure.Repositories;
 
 namespace Ihugi.Infrastructure;
@@ -20,6 +22,9 @@ public static class DependencyInjection
         
         // Caching
         services.AddSingleton<ICacheService, CacheService>();
+        
+        // SignalR
+        services.AddSingleton<IConnectionManager, ConnectionManager>();
         
         return services;
     }

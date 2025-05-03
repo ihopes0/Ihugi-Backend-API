@@ -1,10 +1,12 @@
 using Ihugi.Application;
+using Ihugi.Application.Abstractions;
 using Ihugi.Infrastructure;
 using Ihugi.Infrastructure.BackgroundJobs;
 using Ihugi.Infrastructure.Interceptors;
+using Ihugi.Infrastructure.RealTime;
 using Ihugi.Presentation;
+using Ihugi.Presentation.Hubs;
 using Ihugi.WebApi.Config;
-using Ihugi.WebApi.Hubs;
 using Ihugi.WebApi.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -78,6 +80,8 @@ builder.Services
     .AddApplication()
     .AddInfrastructure()
     .AddPresentation();
+
+builder.Services.AddScoped<IRealTimeCommunicationService, RealTimeCommunicationService<ChatHub>>();
 
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
