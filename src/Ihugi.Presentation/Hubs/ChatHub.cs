@@ -2,27 +2,33 @@ using Ihugi.Application.Abstractions;
 using Ihugi.Application.Dtos;
 using Ihugi.Common.Constants;
 using Ihugi.Domain.Abstractions;
+using Ihugi.Domain.ValueObjects;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Ihugi.Presentation.Hubs;
 
 public class ChatHub : Hub<IChatClient>
 {
-    private readonly ICacheService _cacheService;
+    private readonly IConnectionManager _connectionManager;
 
     private const string ChatConnectionPrefix = SignalRConstants.ChatConnectionCachePrefix;
 
-    public ChatHub(ICacheService cacheService)
+    public ChatHub(IConnectionManager connectionManager)
     {
-        _cacheService = cacheService;
+        _connectionManager = connectionManager;
     }
 
     public async Task JoinChatAsync(UserConnectionDto userConnectionDto)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, userConnectionDto.ChatName);
 
-        await _cacheService.SetAsync($"{ChatConnectionPrefix}{Context.ConnectionId}", userConnectionDto);
-
+        await _connectionManager.AddConnectionAsync(
+            $"{ChatConnectionPrefix}{Context.ConnectionId}",
+            new UserConnection(
+                userConnectionDto.UserName,
+                userConnectionDto.ChatName
+            ));
+        
         await Clients.Group(userConnectionDto.ChatName)
             .ReceiveAdminMessageAsync("Admin", $"{userConnectionDto.UserName} присоединился к чату.");
     }
@@ -38,14 +44,14 @@ public class ChatHub : Hub<IChatClient>
                 .ReceiveMessageAsync(connection.UserName, message);
         }
     }
-    
+
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var connection = await GetConnectionAsync();
 
         if (connection is not null)
         {
-            await _cacheService.RemoveAsync($"{ChatConnectionPrefix}{Context.ConnectionId}");
+            await _connectionManager.RemoveConnectionAsync($"{ChatConnectionPrefix}{Context.ConnectionId}");
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, connection.ChatName);
 
             await Clients
@@ -55,9 +61,10 @@ public class ChatHub : Hub<IChatClient>
 
         await base.OnDisconnectedAsync(exception);
     }
-    
-    private async Task<UserConnectionDto?> GetConnectionAsync()
+
+    private async Task<UserConnection?> GetConnectionAsync()
     {
-        return await _cacheService.GetAsync<UserConnectionDto>($"{ChatConnectionPrefix}{Context.ConnectionId}");
+        return await _connectionManager
+            .GetConnectionAsync($"{ChatConnectionPrefix}{Context.ConnectionId}");
     }
 }
