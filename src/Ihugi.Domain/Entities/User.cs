@@ -9,6 +9,9 @@ namespace Ihugi.Domain.Entities;
 /// </summary>
 public sealed class User : AggregateRoot
 {
+    private readonly List<Message> _messages = new();
+    private readonly List<Chat> _chats = new();
+
     /// <summary>
     /// Конструктор для EF Core
     /// </summary>
@@ -40,26 +43,26 @@ public sealed class User : AggregateRoot
     /// Имя
     /// </summary>
     public string Name { get; private set; }
-    
+
     /// <summary>
     /// Пароль
     /// </summary>
     public string Password { get; private set; }
-    
+
     /// <summary>
     /// Электронная почта
     /// </summary>
     public string Email { get; private set; }
-    
+
     /// <summary>
     /// Чаты, в которых состоит пользователь
     /// </summary>
-    public IReadOnlyCollection<Chat> Chats { get; set; } = [];
+    public IReadOnlyCollection<Chat> Chats => _chats;
 
     /// <summary>
     /// Сообщения пользователя
     /// </summary>
-    public IReadOnlyCollection<Message> Messages { get; set; } = [];
+    public IReadOnlyCollection<Message> Messages => _messages;
 
     /// <summary>
     /// Статичный метод для создания экземпляра User
@@ -82,7 +85,7 @@ public sealed class User : AggregateRoot
             password: password,
             email: email
         );
-        
+
         user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id));
 
         return user;
@@ -99,7 +102,7 @@ public sealed class User : AggregateRoot
         Name = name;
         Password = password;
         Email = email;
-        
+
         RaiseDomainEvent(new UserUpdatedDomainEvent(Id));
     }
 }
