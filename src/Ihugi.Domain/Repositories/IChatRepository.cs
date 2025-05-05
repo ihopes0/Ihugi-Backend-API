@@ -7,4 +7,5 @@ namespace Ihugi.Domain.Repositories;
 /// </summary>
 public interface IChatRepository : IRepository<Chat>
 {
+    Task<Chat?> GetByIdWithMessagesAsync(Guid id, CancellationToken cancellationToken);
 }

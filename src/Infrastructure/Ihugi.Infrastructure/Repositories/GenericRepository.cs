@@ -18,7 +18,7 @@ internal abstract class GenericRepository<TEntity> : IRepository<TEntity> where 
     }
 
     /// <inheritdoc />
-    public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await DbSet.FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }
