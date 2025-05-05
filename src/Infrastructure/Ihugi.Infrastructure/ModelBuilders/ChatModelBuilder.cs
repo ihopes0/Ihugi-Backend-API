@@ -18,7 +18,7 @@ public class ChatModelBuilder : IEntityTypeConfiguration<Chat>
             .HasForeignKey(m => m.ChatId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(o => o.Users)
+        builder.HasMany(c => c.Users)
             .WithMany(u => u.Chats)
             .UsingEntity(j => j.ToTable("UserChat"));
     }

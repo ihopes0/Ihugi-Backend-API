@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Ihugi.Common.ErrorWork;
 using Ihugi.Domain.Errors;
 using Ihugi.Domain.Primitives;
@@ -8,6 +9,7 @@ namespace Ihugi.Domain.Entities.Chats;
 /// <summary>
 /// Сообщение
 /// </summary>
+[Table("Messages")]
 public class Message : Entity
 {
     /// <summary>
@@ -17,7 +19,7 @@ public class Message : Entity
     /// <param name="authorId">Индентификатор автора</param>
     /// <param name="chatId">Идентификатор чата</param>
     /// <param name="content">Содержание сообщения</param>
-    private Message(Guid id, Guid authorId, Guid chatId, string content)
+    private Message(Guid authorId, Guid chatId, string content, Guid? id = null)
         : base(id)
     {
         AuthorId = authorId;
@@ -25,12 +27,12 @@ public class Message : Entity
         Content = content;
         SentAt = DateTime.UtcNow;
     }
-    
+
     /// <summary>
     /// Идентификатор автора сообщения
     /// </summary>
     public Guid AuthorId { get; private set; }
-    
+
     /// <summary>
     /// Идентификатор чата
     /// </summary>
@@ -47,7 +49,6 @@ public class Message : Entity
     public DateTime SentAt { get; private set; }
 
     internal static Result<Message> Create(
-        Guid id,
         Guid authorId,
         Guid chatId,
         string content)
@@ -58,7 +59,6 @@ public class Message : Entity
         }
 
         var message = new Message(
-            id,
             authorId,
             chatId,
             content.Trim());

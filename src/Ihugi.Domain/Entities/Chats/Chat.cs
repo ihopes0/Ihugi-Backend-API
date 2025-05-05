@@ -1,4 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
 using Ihugi.Common.ErrorWork;
 using Ihugi.Domain.Errors;
 using Ihugi.Domain.Primitives;
@@ -11,7 +10,8 @@ namespace Ihugi.Domain.Entities.Chats;
 /// </summary>
 public class Chat : AggregateRoot
 {
-    private readonly List<Message> _messages = new();
+    private readonly List<Message> _messages = [];
+    private readonly List<User> _members = [];
 
     /// <summary>
     /// Конструктор для EF Core
@@ -42,12 +42,12 @@ public class Chat : AggregateRoot
     /// <summary>
     /// Сообщения, относящиеся к чату
     /// </summary>
-    public IReadOnlyCollection<Message> Messages => _messages;
+    public IReadOnlyCollection<Message> Messages => _messages.ToList();
 
     /// <summary>
     /// Пользователи в чате
     /// </summary>
-    public IReadOnlyCollection<User> Users { get; set; }
+    public IReadOnlyCollection<User> Users => _members.ToList();
 
     /// <summary>
     /// Статичный метод для создания экземпляра Chat
@@ -77,6 +77,11 @@ public class Chat : AggregateRoot
         Name = name;
     }
 
+    public void AddMember(User user)
+    {
+        _members.Add(user);
+    }
+
     /// <summary>
     /// Добавить сообщение
     /// </summary>
@@ -89,7 +94,6 @@ public class Chat : AggregateRoot
     )
     {
         var messageResult = Message.Create(
-            Guid.NewGuid(),
             authorId,
             Id,
             content);

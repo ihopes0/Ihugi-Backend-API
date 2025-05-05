@@ -56,7 +56,7 @@ namespace Ihugi.Infrastructure.Migrations
 
             modelBuilder.Entity("Ihugi.Domain.Entities.Chats.Message", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
@@ -79,7 +79,7 @@ namespace Ihugi.Infrastructure.Migrations
 
                     b.HasIndex("ChatId");
 
-                    b.ToTable("Message");
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Ihugi.Domain.Entities.User", b =>

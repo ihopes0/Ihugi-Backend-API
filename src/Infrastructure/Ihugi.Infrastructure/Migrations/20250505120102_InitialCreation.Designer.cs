@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ihugi.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250427115517_AddEmailColumnToUsers")]
-    partial class AddEmailColumnToUsers
+    [Migration("20250505120102_InitialCreation")]
+    partial class InitialCreation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,7 +59,7 @@ namespace Ihugi.Infrastructure.Migrations
 
             modelBuilder.Entity("Ihugi.Domain.Entities.Chats.Message", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
@@ -82,7 +82,7 @@ namespace Ihugi.Infrastructure.Migrations
 
                     b.HasIndex("ChatId");
 
-                    b.ToTable("Message");
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Ihugi.Domain.Entities.User", b =>

@@ -15,7 +15,7 @@ public abstract class Entity : IEquatable<Entity>
     /// Конструктор с инициализацией Id cущности
     /// </summary>
     /// <param name="id">Id сущности</param>
-    protected Entity(Guid id)
+    protected Entity(Guid? id)
     {
         Id = id;
     }
@@ -23,7 +23,7 @@ public abstract class Entity : IEquatable<Entity>
     /// <summary>
     /// Идентификатор сущности
     /// </summary>
-    public Guid Id { get; private init; }
+    public Guid? Id { get; private init; }
 
     /// <summary>
     /// Оператор сравнения равенства

@@ -14,8 +14,8 @@ public abstract class AggregateRoot : Entity
     /// </summary>
     /// <param name="id">Id сущности</param>
     protected AggregateRoot(Guid id)
-        : base(id)
     {
+        Id = id;
     }
 
     /// <summary>
@@ -24,6 +24,8 @@ public abstract class AggregateRoot : Entity
     protected AggregateRoot()
     {
     }
+    
+    public new Guid Id { get; private init; }
 
     /// <summary>
     /// Вызывает событие домена. В данной имплементации добавляет его в коллекцию сущности.
