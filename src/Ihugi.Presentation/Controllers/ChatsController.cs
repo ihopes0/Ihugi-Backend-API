@@ -6,7 +6,6 @@ using Ihugi.Application.UseCases.Chats.Commands.UpdateChatPut;
 using Ihugi.Application.UseCases.Chats.Queries.GetChatById;
 using Ihugi.Application.UseCases.Chats.Queries.GetChats;
 using Ihugi.Common.ErrorWork;
-using Ihugi.Domain.Repositories;
 using Ihugi.Presentation.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +19,8 @@ namespace Ihugi.Presentation.Controllers;
 [ApiController]
 public class ChatsController : ApiController
 {
-    private readonly IChatRepository _chatRepository;
-    private readonly IUnitOfWork _unitOfWork;
-    
-    public ChatsController(ISender sender, IChatRepository chatRepository, IUnitOfWork unitOfWork) : base(sender)
+    public ChatsController(ISender sender) : base(sender)
     {
-        _chatRepository = chatRepository;
-        _unitOfWork = unitOfWork;
     }
 
     /// <summary>
@@ -114,20 +108,5 @@ public class ChatsController : ApiController
         var result = await Sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
-    }
-
-    [HttpPost]
-    [Route("test-add-msg")]
-    public async Task<IActionResult> TestAddMsg(Guid chatId, Guid authorId, string content)
-    {
-        var chat = await _chatRepository.GetByIdAsync(chatId);
-
-        if (chat is null) return BadRequest();
-        
-        chat.AddMessage(authorId, content);
-
-        await _unitOfWork.SaveChangesAsync();
-
-        return Ok();
     }
 }
