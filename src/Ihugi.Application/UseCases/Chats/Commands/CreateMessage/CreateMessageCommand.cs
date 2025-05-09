@@ -1,6 +1,6 @@
 using Ihugi.Application.Abstractions;
 
-namespace Ihugi.Application.UseCases.Messages.Commands.CreateMessage;
+namespace Ihugi.Application.UseCases.Chats.Commands.CreateMessage;
 
 /// <summary>
 /// Команда для создания сообщения

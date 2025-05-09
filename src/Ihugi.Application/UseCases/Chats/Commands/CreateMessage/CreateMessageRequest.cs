@@ -1,4 +1,4 @@
-namespace Ihugi.Application.UseCases.Messages.Commands.CreateMessage;
+namespace Ihugi.Application.UseCases.Chats.Commands.CreateMessage;
 
 /// <summary>
 /// DTO запроса для создания нового сообщения
@@ -6,4 +6,4 @@ namespace Ihugi.Application.UseCases.Messages.Commands.CreateMessage;
 /// <param name="ChatId">Идентификатор чата</param>
 /// <param name="AuthorId">Идентификатор автора сообщения</param>
 /// <param name="Content">Содержание сообщения</param>
-public sealed record CreateMessageRequest(Guid ChatId, Guid AuthorId, string Content);
+public sealed record CreateMessageRequest(Guid AuthorId, string Content);

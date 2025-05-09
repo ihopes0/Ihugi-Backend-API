@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using Ihugi.Application.UseCases.Chats;
 using Ihugi.Application.UseCases.Chats.Commands.CreateChat;
+using Ihugi.Application.UseCases.Chats.Commands.CreateMessage;
 using Ihugi.Application.UseCases.Chats.Commands.DeleteChatById;
 using Ihugi.Application.UseCases.Chats.Commands.UpdateChatPut;
 using Ihugi.Application.UseCases.Chats.Queries.GetChatById;
@@ -108,5 +109,22 @@ public class ChatsController : ApiController
         var result = await Sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+    }
+    
+    [HttpPost]
+    [Route("{id:guid}:post-message")]
+    public async Task<IActionResult> CreateMessage(
+        Guid id, 
+        [FromBody] CreateMessageRequest request, 
+        CancellationToken cancellationToken)
+    {
+        var command = new CreateMessageCommand(
+            ChatId: id,
+            AuthorId: request.AuthorId,
+            Content: request.Content);
+
+        var result = await Sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 }

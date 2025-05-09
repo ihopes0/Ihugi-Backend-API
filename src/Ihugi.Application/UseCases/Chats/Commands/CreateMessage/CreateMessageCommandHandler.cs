@@ -3,7 +3,7 @@ using Ihugi.Common.ErrorWork;
 using Ihugi.Domain.Errors;
 using Ihugi.Domain.Repositories;
 
-namespace Ihugi.Application.UseCases.Messages.Commands.CreateMessage;
+namespace Ihugi.Application.UseCases.Chats.Commands.CreateMessage;
 
 internal sealed class CreateMessageCommandHandler : ICommandHandler<CreateMessageCommand, MessageResponse>
 {

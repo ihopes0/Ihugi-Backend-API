@@ -1,4 +1,4 @@
-namespace Ihugi.Application.UseCases.Messages;
+namespace Ihugi.Application.UseCases.Chats;
 
 /// <summary>
 /// Ответ с информацией о сообщении
