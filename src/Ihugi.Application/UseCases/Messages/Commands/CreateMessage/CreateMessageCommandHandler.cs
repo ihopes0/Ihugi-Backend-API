@@ -18,7 +18,7 @@ internal sealed class CreateMessageCommandHandler : ICommandHandler<CreateMessag
 
     public async Task<Result<MessageResponse>> Handle(CreateMessageCommand request, CancellationToken cancellationToken)
     {
-        var chat = await _chatRepository.GetByIdAsync(request.ChatId, cancellationToken);
+        var chat = await _chatRepository.GetByIdWithMembersAsync(request.ChatId, cancellationToken);
 
         if (chat is null)
         {

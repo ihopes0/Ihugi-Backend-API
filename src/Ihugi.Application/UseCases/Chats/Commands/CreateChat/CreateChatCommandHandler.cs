@@ -20,6 +20,7 @@ public class CreateChatCommandHandler : ICommandHandler<CreateChatCommand, ChatR
     {
         var chat = Chat.Create(
             Guid.NewGuid(),
+            request.CreatorId,
             request.Name);
 
         await _chatRepository.AddAsync(chat, cancellationToken);

@@ -16,9 +16,9 @@ public class UserModelBuilder : IEntityTypeConfiguration<User>
         builder.Property(u => u.Email).HasColumnName("email");
 
         builder.HasMany(u => u.Chats)
-            .WithMany(c => c.Users)
-            .UsingEntity(j => j.ToTable("UserChat"));
-
+            .WithOne()
+            .HasForeignKey(c => c.UserId);
+        
         builder.HasMany(u => u.Messages)
             .WithOne()
             .HasForeignKey(m => m.AuthorId);

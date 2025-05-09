@@ -11,7 +11,7 @@ namespace Ihugi.Domain.Entities.Chats;
 public class Chat : AggregateRoot
 {
     private readonly List<Message> _messages = [];
-    private readonly List<User> _members = [];
+    private readonly List<ChatMember> _members = [];
 
     /// <summary>
     /// Конструктор для EF Core
@@ -24,14 +24,17 @@ public class Chat : AggregateRoot
     /// .ctor
     /// </summary>
     /// <param name="id">Идентификатор</param>
+    /// <param name="creatorId">Идентификатор создателя чата</param>
     /// <param name="name">Название</param>
     private Chat(
         Guid id,
+        Guid creatorId,
         string name
     )
         : base(id)
     {
         Name = name;
+        AddMember(creatorId);
     }
 
     /// <summary>
@@ -42,26 +45,29 @@ public class Chat : AggregateRoot
     /// <summary>
     /// Сообщения, относящиеся к чату
     /// </summary>
-    public IReadOnlyCollection<Message> Messages => _messages.ToList();
+    public IReadOnlyCollection<Message> Messages => _messages.AsReadOnly();
 
     /// <summary>
     /// Пользователи в чате
     /// </summary>
-    public IReadOnlyCollection<User> Users => _members.ToList();
+    public IReadOnlyCollection<ChatMember> Members => _members.AsReadOnly();
 
     /// <summary>
     /// Статичный метод для создания экземпляра Chat
     /// </summary>
     /// <param name="id">Идентификатор чата</param>
+    /// <param name="creatorId">Идентификтор создателя чата</param>
     /// <param name="name">Название чата</param>
     /// <returns>Экземпляр Chat</returns>
     public static Chat Create(
         Guid id,
+        Guid creatorId,
         string name
     )
     {
         var chat = new Chat(
             id: id,
+            creatorId: creatorId,
             name: name
         );
 
@@ -77,9 +83,9 @@ public class Chat : AggregateRoot
         Name = name;
     }
 
-    public void AddMember(User user)
+    public void AddMember(Guid userId)
     {
-        _members.Add(user);
+        _members.Add(new ChatMember(userId, Id));
     }
 
     /// <summary>

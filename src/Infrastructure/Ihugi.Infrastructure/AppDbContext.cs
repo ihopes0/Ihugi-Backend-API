@@ -28,6 +28,7 @@ public class AppDbContext : DbContext
     {
         modelBuilder.ApplyConfiguration(new ChatModelBuilder());
         modelBuilder.ApplyConfiguration(new UserModelBuilder());
+        modelBuilder.ApplyConfiguration(new ChatMemberModelBuilder());
         
         base.OnModelCreating(modelBuilder);
     }

@@ -10,7 +10,7 @@ namespace Ihugi.Domain.Entities;
 public sealed class User : AggregateRoot
 {
     private readonly List<Message> _messages = new();
-    private readonly List<Chat> _chats = new();
+    private readonly List<ChatMember> _chats = new();
 
     /// <summary>
     /// Конструктор для EF Core
@@ -57,7 +57,7 @@ public sealed class User : AggregateRoot
     /// <summary>
     /// Чаты, в которых состоит пользователь
     /// </summary>
-    public IReadOnlyCollection<Chat> Chats => _chats;
+    public IReadOnlyCollection<ChatMember> Chats => _chats.AsReadOnly();
 
     /// <summary>
     /// Сообщения пользователя
