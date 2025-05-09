@@ -25,6 +25,10 @@ public static class DomainErrors
         public static readonly Error NotFound = new Error(
             "Chat.NotFound",
             "Чата с таким ID не существует");
+
+        public static readonly Error UserNotMember = new Error(
+            "Chat.UserNotMember",
+            "Пользователь не является участником чата");
     }
 
     public static class Message

@@ -25,6 +25,11 @@ internal sealed class CreateMessageCommandHandler : ICommandHandler<CreateMessag
             return Result.Failure<MessageResponse>(DomainErrors.Chat.NotFound);
         }
 
+        if (chat.Members.All(cm => cm.UserId != request.AuthorId))
+        {
+            return Result.Failure<MessageResponse>(DomainErrors.Chat.UserNotMember);
+        }
+
         var messageResult = chat.AddMessage(
             authorId: request.AuthorId,
             content: request.Content);
