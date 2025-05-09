@@ -81,7 +81,7 @@ builder.Services
     .AddInfrastructure()
     .AddPresentation();
 
-builder.Services.AddScoped<IRealTimeCommunicationService, RealTimeCommunicationService<ChatHub>>();
+builder.Services.AddScoped<IRealTimeCommunicationService, RtcService<ChatHub>>();
 
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)

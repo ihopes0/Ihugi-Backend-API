@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.SignalR;
 namespace Ihugi.Infrastructure.RealTime;
 
 // TODO: XML docs
-public sealed class RealTimeCommunicationService<THub> : IRealTimeCommunicationService
+public sealed class RtcService<THub> : IRealTimeCommunicationService
     where THub : Hub
 {
     private readonly IHubContext<THub> _hubContext;
     private readonly IConnectionManager _connectionManager;
 
-    public RealTimeCommunicationService(IHubContext<THub> hubContext, IConnectionManager connectionManager)
+    public RtcService(IHubContext<THub> hubContext, IConnectionManager connectionManager)
     {
         _hubContext = hubContext;
         _connectionManager = connectionManager;
@@ -24,9 +24,9 @@ public sealed class RealTimeCommunicationService<THub> : IRealTimeCommunicationS
         throw new NotImplementedException();
     }
 
-    public async Task SendMessageToGroupAsync(string groupName, string message)
+    public async Task SendMessageToGroupAsync(string groupName, string userName, string message)
     {
-        await _hubContext.Clients.Group(groupName).SendAsync(SignalRConstants.ReceiveMessage, message);
+        await _hubContext.Clients.Group(groupName).SendAsync(SignalRConstants.ReceiveMessage, userName, message);
     }
 
     // TODO: AddToGroupAsync

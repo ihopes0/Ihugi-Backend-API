@@ -8,12 +8,16 @@ namespace Ihugi.Application.UseCases.Chats.Commands.CreateMessage;
 internal sealed class CreateMessageCommandHandler : ICommandHandler<CreateMessageCommand, MessageResponse>
 {
     private readonly IChatRepository _chatRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IRealTimeCommunicationService _rtcService;
 
-    public CreateMessageCommandHandler(IChatRepository chatRepository, IUnitOfWork unitOfWork)
+    public CreateMessageCommandHandler(IChatRepository chatRepository, IUnitOfWork unitOfWork, IRealTimeCommunicationService rtcService, IUserRepository userRepository)
     {
         _chatRepository = chatRepository;
         _unitOfWork = unitOfWork;
+        _rtcService = rtcService;
+        _userRepository = userRepository;
     }
 
     public async Task<Result<MessageResponse>> Handle(CreateMessageCommand request, CancellationToken cancellationToken)
@@ -45,6 +49,10 @@ internal sealed class CreateMessageCommandHandler : ICommandHandler<CreateMessag
         {
             return Result.Failure<MessageResponse>(DomainErrors.Message.NotCreated);
         }
+
+        var user = await _userRepository.GetByIdAsync(messageResult.Value.AuthorId, cancellationToken);
+
+        await _rtcService.SendMessageToGroupAsync(chat.Name, user!.Name, messageResult.Value.Content);
 
         var response = new MessageResponse(
             messageResult.Value.Id,
