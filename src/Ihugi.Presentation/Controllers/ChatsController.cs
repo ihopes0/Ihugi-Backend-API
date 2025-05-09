@@ -3,10 +3,12 @@ using Ihugi.Application.UseCases.Chats;
 using Ihugi.Application.UseCases.Chats.Commands.CreateChat;
 using Ihugi.Application.UseCases.Chats.Commands.CreateMessage;
 using Ihugi.Application.UseCases.Chats.Commands.DeleteChatById;
+using Ihugi.Application.UseCases.Chats.Commands.DeleteMessage;
 using Ihugi.Application.UseCases.Chats.Commands.UpdateChatPut;
 using Ihugi.Application.UseCases.Chats.Queries.GetChatById;
 using Ihugi.Application.UseCases.Chats.Queries.GetChats;
 using Ihugi.Common.ErrorWork;
+using Ihugi.Domain.Errors;
 using Ihugi.Presentation.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -110,12 +112,20 @@ public class ChatsController : ApiController
 
         return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
     }
-    
+
+    /// <summary>
+    /// Добавить сообщение
+    /// </summary>
+    /// <param name="id">Идентификатор чата</param>
+    /// <param name="request">Тело запроса</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     [HttpPost]
     [Route("{id:guid}:post-message")]
+    [ProducesResponseType(typeof(MessageResponse), 200)]
+    [ProducesResponseType(typeof(Error), 400)]
     public async Task<IActionResult> CreateMessage(
-        Guid id, 
-        [FromBody] CreateMessageRequest request, 
+        Guid id,
+        [FromBody] CreateMessageRequest request,
         CancellationToken cancellationToken)
     {
         var command = new CreateMessageCommand(
@@ -126,5 +136,29 @@ public class ChatsController : ApiController
         var result = await Sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+    }
+
+    [HttpDelete]
+    [Route("{id:guid}:delete-message")]
+    [ProducesResponseType(typeof(MessageResponse), 200)]
+    [ProducesResponseType(typeof(Error), 400)]
+    [ProducesResponseType(204)]
+    public async Task<IActionResult> DeleteMessage(
+        Guid id,
+        [FromBody] DeleteMessageRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteMessageCommand(
+            ChatId: id,
+            MessageId: request.MessageId);
+
+        var result = await Sender.Send(command, cancellationToken);
+
+        if (result.IsFailure && result.Error == DomainErrors.Chat.NotFound)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return result.IsSuccess ? Ok(result.Value) : NoContent();
     }
 }

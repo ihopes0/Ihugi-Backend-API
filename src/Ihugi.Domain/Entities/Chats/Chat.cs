@@ -119,17 +119,17 @@ public class Chat : AggregateRoot
     /// </summary>
     /// <param name="messageId">Идентификатор сообщения</param>
     /// <returns>Возвращает объект Common.ErrorWork.Result</returns>
-    public Result RemoveMessage(Guid messageId)
+    public Result<Message> RemoveMessage(Guid messageId)
     {
         var message = _messages.Find(m => m.Id == messageId);
 
         if (message is null)
         {
-            return Result.Failure(DomainErrors.Message.NotFound);
+            return Result.Failure<Message>(DomainErrors.Message.NotFound);
         }
 
         _messages.Remove(message);
 
-        return Result.Success();
+        return Result.Success(message);
     }
 }
