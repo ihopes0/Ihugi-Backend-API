@@ -36,5 +36,9 @@ public static class DomainErrors
         public static readonly Error NotFound = new Error(
             "Message.NotFound",
             "Сообщение с таким ID не найдено.");
+
+        public static readonly Error NotCreated = new Error(
+            "Message.NotCreated",
+            "Сообщение не было создано.");
     }
 }

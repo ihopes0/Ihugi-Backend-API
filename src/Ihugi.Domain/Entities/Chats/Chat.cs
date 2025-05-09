@@ -88,7 +88,7 @@ public class Chat : AggregateRoot
     /// <param name="authorId">Идентификатор автора сообщения</param>
     /// <param name="content">Тело сообщения</param>
     /// <returns>Возвращает объект Common.ErrorWork.Result</returns>
-    public Result AddMessage(
+    public Result<Message> AddMessage(
         Guid authorId,
         string content
     )
@@ -105,7 +105,7 @@ public class Chat : AggregateRoot
 
         _messages.Add(messageResult.Value!);
 
-        return Result.Success();
+        return Result.Success(messageResult.Value!);
     }
 
     /// <summary>

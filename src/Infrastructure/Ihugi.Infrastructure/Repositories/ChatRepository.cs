@@ -21,4 +21,11 @@ internal class ChatRepository : GenericRepository<Chat>, IChatRepository
             .Include(c => c.Messages)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
+
+    public async Task<Chat?> GetByIdWithMembersAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await DbSet
+            .Include(c => c.Users)
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+    }
 }
