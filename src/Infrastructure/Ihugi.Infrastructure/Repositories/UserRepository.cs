@@ -22,4 +22,9 @@ internal class UserRepository : GenericRepository<User>, IUserRepository
 
         return user is null;
     }
+    /// <inheritdoc />
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        return await DbSet.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+    }
 }
