@@ -6,11 +6,11 @@ using Ihugi.Infrastructure.Interceptors;
 using Ihugi.Infrastructure.RealTime;
 using Ihugi.Presentation;
 using Ihugi.Presentation.Hubs;
-using Ihugi.WebApi.Config;
+using Ihugi.WebApi.Configurations;
 using Ihugi.WebApi.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using Quartz;
 using Serilog;
 
@@ -43,6 +43,12 @@ builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer();
+
+builder.Services.ConfigureOptions<JwtOptionsSetup>();
+builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
 
 builder.Services.AddControllers().AddApplicationPart(typeof(Ihugi.Presentation.AssemblyReference).Assembly);
 
@@ -101,28 +107,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddSwaggerGen(static options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo()
-    {
-        Version = "v1",
-        Title = "API Ihugi",
-        Description = "Сервис для приложения чата Ihugi",
-        Contact = new OpenApiContact
-        {
-            Name = "Email главного разработчика",
-            Email = "brnv.ma@gmail.com"
-        }
-    });
-
-    foreach (var name in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml",
-                 SearchOption.AllDirectories))
-    {
-        options.IncludeXmlComments(name);
-    }
-
-    options.SchemaFilter<EnumSchemaFilter>();
-});
+builder.Services.AddConfiguredSwagger();
 
 var app = builder.Build();
 
@@ -139,6 +124,10 @@ app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapHub<ChatHub>("/chat");
 

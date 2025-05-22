@@ -18,6 +18,10 @@ public static class DomainErrors
         public static readonly Error EmailAlreadyInUse = new Error(
             "User.EmailAlreadyInUse",
             "Пользователь с таким email уже существует.");
+
+        public static readonly Error InvalidCredentials = new Error(
+            "User.InvalidCredentials",
+            "Введеные логин/электронная почта или пароль неверны.");
     }
 
     public static class Chat

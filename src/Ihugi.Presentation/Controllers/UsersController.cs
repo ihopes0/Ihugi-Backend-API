@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using Ihugi.Application.UseCases.Users.Commands.CreateUser;
 using Ihugi.Application.UseCases.Users.Commands.DeleteUserById;
+using Ihugi.Application.UseCases.Users.Commands.Login;
 using Ihugi.Application.UseCases.Users.Commands.UpdateUserPut;
 using Ihugi.Application.UseCases.Users.Queries.GetUserById;
 using Ihugi.Application.UseCases.Users.Queries.GetUsers;
@@ -8,6 +9,7 @@ using Ihugi.Common.ErrorWork;
 using Ihugi.Domain.Errors;
 using Ihugi.Presentation.Abstractions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ihugi.Presentation.Controllers;
@@ -33,6 +35,7 @@ public class UsersController : ApiController
         return result.IsSuccess ? Ok(request) : BadRequest(result.Error);
     }
 
+    [Authorize]
     [HttpGet]
     [ProducesResponseType(typeof(GetUsersResponse), 200)]
     [ProducesResponseType(typeof(Error), 400)]
@@ -97,5 +100,21 @@ public class UsersController : ApiController
         var result = await Sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+    }
+
+    [HttpPost]
+    [Route("login")]
+    public async Task<IActionResult> LoginUser([FromBody] LoginRequest request, CancellationToken cancellationToken)
+    {
+        var command = new LoginCommand(request.Email);
+
+        var result = await Sender.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok(result.Value);
     }
 }

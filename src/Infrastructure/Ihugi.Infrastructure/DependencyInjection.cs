@@ -1,6 +1,7 @@
 using Ihugi.Application.Abstractions;
 using Ihugi.Domain.Abstractions;
 using Ihugi.Domain.Repositories;
+using Ihugi.Infrastructure.Authentication;
 using Ihugi.Infrastructure.Caching;
 using Ihugi.Infrastructure.RealTime;
 using Ihugi.Infrastructure.Repositories;
@@ -25,6 +26,9 @@ public static class DependencyInjection
         
         // SignalR
         services.AddSingleton<IConnectionManager, ConnectionManager>();
+        
+        // JWT
+        services.AddScoped<IJwtProvider, JwtProvider>();
         
         return services;
     }

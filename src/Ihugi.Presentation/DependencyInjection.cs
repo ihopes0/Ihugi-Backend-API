@@ -1,3 +1,4 @@
+using Ihugi.Application.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Ihugi.Presentation;
