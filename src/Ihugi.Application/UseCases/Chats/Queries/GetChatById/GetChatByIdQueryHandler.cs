@@ -5,15 +5,23 @@ using Ihugi.Domain.Repositories;
 
 namespace Ihugi.Application.UseCases.Chats.Queries.GetChatById;
 
-public sealed class GetChatByIdQueryHandler : IQueryHandler<GetChatByIdQuery, ChatResponse>
+/// <inheritdoc/>
+/// <summary>
+/// Хэндлер запроса получения чата по ID
+/// </summary>
+internal sealed class GetChatByIdQueryHandler : IQueryHandler<GetChatByIdQuery, ChatResponse>
 {
     private readonly IChatRepository _chatRepository;
 
+    /// <summary>
+    /// .ctor
+    /// </summary>
     public GetChatByIdQueryHandler(IChatRepository chatRepository)
     {
         _chatRepository = chatRepository;
     }
 
+    /// <inheritdoc/>
     public async Task<Result<ChatResponse>> Handle(GetChatByIdQuery request, CancellationToken cancellationToken)
     {
         var chat = await _chatRepository.GetByIdAsync(request.Id, cancellationToken);

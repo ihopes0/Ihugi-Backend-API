@@ -5,17 +5,22 @@ using Ihugi.Domain.Repositories;
 
 namespace Ihugi.Application.UseCases.Chats.Commands.CreateChat;
 
-public class CreateChatCommandHandler : ICommandHandler<CreateChatCommand, ChatResponse>
+/// <inheritdoc/>
+internal sealed class CreateChatCommandHandler : ICommandHandler<CreateChatCommand, ChatResponse>
 {
     private readonly IChatRepository _chatRepository;
     private readonly IUnitOfWork _unitOfWork;
 
+    /// <summary>
+    /// .ctor
+    /// </summary>
     public CreateChatCommandHandler(IChatRepository chatRepository, IUnitOfWork unitOfWork)
     {
         _chatRepository = chatRepository;
         _unitOfWork = unitOfWork;
     }
 
+    /// <inheritdoc/>
     public async Task<Result<ChatResponse>> Handle(CreateChatCommand request, CancellationToken cancellationToken)
     {
         var chat = Chat.Create(

@@ -2,6 +2,7 @@ using Ihugi.Application.Abstractions;
 
 namespace Ihugi.Application.UseCases.Chats.Queries.GetChatById;
 
+/// <inheritdoc/>
 /// <summary>
 /// Запрос для получения чата по Id
 /// </summary>

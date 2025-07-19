@@ -1,7 +1,7 @@
 namespace Ihugi.Application.UseCases.Chats;
 
 /// <summary>
-/// Ответ с информацией о сообщении
+/// DTO ответа с информацией о сообщении
 /// </summary>
 /// <param name="Id">Идентификатор сообщения</param>
 /// <param name="ChatId">Идентификатор чата</param>

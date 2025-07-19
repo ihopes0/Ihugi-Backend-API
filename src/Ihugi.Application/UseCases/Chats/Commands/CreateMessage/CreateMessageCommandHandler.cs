@@ -5,6 +5,10 @@ using Ihugi.Domain.Repositories;
 
 namespace Ihugi.Application.UseCases.Chats.Commands.CreateMessage;
 
+/// <inheritdoc/>
+/// <summary>
+/// Хэндлер команды создания сообщения
+/// </summary>
 internal sealed class CreateMessageCommandHandler : ICommandHandler<CreateMessageCommand, MessageResponse>
 {
     private readonly IChatRepository _chatRepository;
@@ -12,6 +16,9 @@ internal sealed class CreateMessageCommandHandler : ICommandHandler<CreateMessag
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRealTimeCommunicationService _rtcService;
 
+   /// <summary>
+   /// .ctor
+   /// </summary>
     public CreateMessageCommandHandler(IChatRepository chatRepository, IUnitOfWork unitOfWork, IRealTimeCommunicationService rtcService, IUserRepository userRepository)
     {
         _chatRepository = chatRepository;
@@ -20,6 +27,7 @@ internal sealed class CreateMessageCommandHandler : ICommandHandler<CreateMessag
         _userRepository = userRepository;
     }
 
+   /// <inheritdoc/>
     public async Task<Result<MessageResponse>> Handle(CreateMessageCommand request, CancellationToken cancellationToken)
     {
         var chat = await _chatRepository.GetByIdWithMembersAsync(request.ChatId, cancellationToken);
@@ -45,6 +53,7 @@ internal sealed class CreateMessageCommandHandler : ICommandHandler<CreateMessag
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        // Если при сохранении сообщения в БД, ему не присвоился ID
         if (messageResult.Value?.Id is null)
         {
             return Result.Failure<MessageResponse>(DomainErrors.Message.NotCreated);

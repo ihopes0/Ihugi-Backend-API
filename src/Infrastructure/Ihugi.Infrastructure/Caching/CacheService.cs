@@ -5,18 +5,22 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace Ihugi.Infrastructure.Caching;
 
-// TODO: XML docs
+/// <inheritdoc/>
 public class CacheService : ICacheService
 {
     private readonly ConcurrentBag<string> _cacheKeys = [];
 
     private readonly IDistributedCache _cache;
 
+    /// <summary>
+    /// .ctor
+    /// </summary>
     public CacheService(IDistributedCache distributedCache)
     {
         _cache = distributedCache;
     }
 
+    /// <inheritdoc/>
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default) where T : class
     {
         var cachedValue = await _cache.GetStringAsync(key, cancellationToken);
@@ -24,6 +28,7 @@ public class CacheService : ICacheService
         return cachedValue is null ? null : JsonSerializer.Deserialize<T>(cachedValue);
     }
 
+    /// <inheritdoc/>
     public async Task<T> GetAsync<T>(string key, Func<Task<T>> factory, CancellationToken cancellationToken = default)
         where T : class
     {
@@ -41,6 +46,7 @@ public class CacheService : ICacheService
         return cachedValue;
     }
 
+    /// <inheritdoc/>
     public async Task SetAsync<T>(string key, T value, CancellationToken cancellationToken = default) where T : class
     {
         var valueToCache = JsonSerializer.Serialize(value);
@@ -50,6 +56,7 @@ public class CacheService : ICacheService
         _cacheKeys.Add(key);
     }
 
+    /// <inheritdoc/>
     public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
         await _cache.RemoveAsync(key, cancellationToken);
@@ -57,6 +64,7 @@ public class CacheService : ICacheService
         _cacheKeys.TryTake(out var _);
     }
 
+    /// <inheritdoc/>
     public async Task RemoveByPrefixAsync(string prefixKey, CancellationToken cancellationToken = default)
     {
         IEnumerable<Task> tasks = _cacheKeys
@@ -66,11 +74,12 @@ public class CacheService : ICacheService
         await Task.WhenAll(tasks);
     }
 
+    /// <inheritdoc/>
     public async Task<IEnumerable<T>> GetByPrefixAsync<T>(string prefixKey,
         CancellationToken cancellationToken = default)
         where T : class
     {
-        var connections = new ConcurrentBag<T>();
+        var cachedValues = new ConcurrentBag<T>();
 
         var tasks = _cacheKeys
             .Where(k => k.StartsWith(prefixKey))
@@ -79,12 +88,12 @@ public class CacheService : ICacheService
                 var value = await GetAsync<T>(k, cancellationToken);
                 if (value != null)
                 {
-                    connections.Add(value);
+                    cachedValues.Add(value);
                 }
             });
 
         await Task.WhenAll(tasks);
 
-        return connections;
+        return cachedValues;
     }
 }

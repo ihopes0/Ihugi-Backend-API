@@ -3,7 +3,11 @@ using MediatR;
 
 namespace Ihugi.Application.Abstractions;
 
-// TODO: XML docs
+/// <summary>
+/// Хэндлер запроса
+/// </summary>
+/// <typeparam name="TQuery">Запрос</typeparam>
+/// <typeparam name="TResponse">Тип ответа</typeparam>
 public interface IQueryHandler<TQuery, TResponse> : IRequestHandler<TQuery, Result<TResponse>>
     where TQuery : IQuery<TResponse>
 {
