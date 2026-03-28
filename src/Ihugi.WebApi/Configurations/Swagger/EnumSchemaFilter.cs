@@ -1,19 +1,12 @@
 using System.ComponentModel;
-using Microsoft.OpenApi.Extensions;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Ihugi.WebApi.Config;
+namespace Ihugi.WebApi.Configurations.Swagger;
 
-/// <summary>
-/// Фильтр для формирования документации Enum к Swagger
-/// </summary>
 public class EnumSchemaFilter : ISchemaFilter
 {
-    /// <summary>
-    /// Применить филььтр
-    /// </summary>
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
     {
         if (!context.Type.IsEnum)
             return;

@@ -4,6 +4,6 @@ namespace Ihugi.Common.Constants;
 public static class SignalRConstants
 {
     public const string ChatConnectionCachePrefix = "ChatConnection-";
-    public const string ReceiveMessage = "ReceiveMessage";
-    public const string ReceiveAdminMessage = "ReceiveAdminMessage";
+    public const string ReceiveMessage = "ReceiveMessageAsync";
+    public const string ReceiveAdminMessage = "ReceiveAdminMessageAsync";
 }

@@ -6,7 +6,7 @@ using Ihugi.Infrastructure.Interceptors;
 using Ihugi.Infrastructure.RealTime;
 using Ihugi.Presentation;
 using Ihugi.Presentation.Hubs;
-using Ihugi.WebApi.Configurations;
+using Ihugi.WebApi.Configurations.Swagger;
 using Ihugi.WebApi.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -16,29 +16,26 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// TODO: Вынести настройку Quartz в Ihugi.Infrastructure
+// TODO: Move to Ihugi.Infrastructure
 builder.Services.AddQuartz(configure =>
 {
     var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
 
     configure
         .AddJob<ProcessOutboxMessagesJob>(jobKey)
-        .AddTrigger(
-            trigger =>
+        .AddTrigger(trigger =>
             {
                 trigger.ForJob(jobKey)
-                    .WithSimpleSchedule(
-                        schedule =>
+                    .WithSimpleSchedule(schedule =>
                         {
-                            schedule.WithIntervalInSeconds(10)
-                                .RepeatForever();
+                            schedule.WithIntervalInSeconds(10).RepeatForever();
                         });
             });
 });
 
 builder.Services.AddQuartzHostedService();
 
-// TODO: Вынести Redis в Ihugi.Infrastructure
+// TODO: Move to Ihugi.Infrastructure
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
@@ -50,11 +47,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
 builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
 
+// TODO: Move to AddPresentation extension method
 builder.Services.AddControllers().AddApplicationPart(typeof(Ihugi.Presentation.AssemblyReference).Assembly);
 
 builder.Services.AddSingleton<ConvertDomainEventToOutboxMessageInterceptor>();
 
-// TODO: Вынести добавление контекста в Ihugi.Infrastructure
+// TODO: Move to Ihugi.Infrastructure
 builder.Services.ConfigureOptions<MySqlDatabaseOptionsSetup>();
 
 builder.Services.AddDbContext<AppDbContext>(
@@ -93,7 +91,7 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
 );
 
-// TODO: Подумать куда вынести SignalR и как работать с его хабами
+// TODO: Handle signalR place in Clean Arch
 builder.Services.AddSignalR();
 
 builder.Services.AddCors(options =>
@@ -110,6 +108,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddConfiguredSwagger();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {

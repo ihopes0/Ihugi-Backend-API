@@ -1,7 +1,6 @@
-using Ihugi.WebApi.Config;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
-namespace Ihugi.WebApi.Configurations;
+namespace Ihugi.WebApi.Configurations.Swagger;
 
 internal static class SwaggerConfiguration
 {
@@ -15,31 +14,27 @@ internal static class SwaggerConfiguration
             {
                 Version = "v1",
                 Title = "API Ihugi",
-                Description = "Сервис для приложения чата Ihugi",
+                Description = "Ihugi Messanger Backend API",
                 Contact = new OpenApiContact
                 {
-                    Name = "Email главного разработчика",
+                    Name = "Contact Email",
                     Email = "brnv.ma@gmail.com"
                 }
             });
 
-            options.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
+            options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
-                Type = SecuritySchemeType.Http,
+                Type = SecuritySchemeType.ApiKey,
                 Scheme = "bearer",
                 BearerFormat = "JWT",
                 In = ParameterLocation.Header,
-                Description = "JWT токен авторизации"
+                Description = "JWT authorization token. Template: 'bearer <JWTToken>'",
             });
 
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement()
             {
-                {
-                    new OpenApiSecurityScheme
-                        { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearerAuth" } },
-                    new List<string>()
-                }
+                [new OpenApiSecuritySchemeReference("bearer", document)] = []
             });
 
             foreach (var name in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml",
@@ -49,6 +44,11 @@ internal static class SwaggerConfiguration
             }
 
             options.SchemaFilter<EnumSchemaFilter>();
+
+            options.AddSignalRSwaggerGen(ssgOptions => 
+            {
+                ssgOptions.ScanAssemblies(typeof(Presentation.AssemblyReference).Assembly);
+            });
         });
 
         return services;
