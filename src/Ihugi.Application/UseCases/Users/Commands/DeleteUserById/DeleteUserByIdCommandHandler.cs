@@ -26,7 +26,7 @@ internal sealed class DeleteUserByIdCommandHandler : ICommandHandler<DeleteUserB
 
         if (user is null)
         {
-            return Result.Failure(DomainErrors.User.NoContent);
+            return Result.Failure(DomainErrors.User.NoContent(request.UserId));
         }
 
         _userRepository.Delete(user);

@@ -30,12 +30,12 @@ internal sealed class DeleteMessageCommandHandler : ICommandHandler<DeleteMessag
 
         if (chat is null)
         {
-            return Result.Failure<MessageResponse>(DomainErrors.Chat.NotFound);
+            return Result.Failure<MessageResponse>(DomainErrors.Chat.NotFound(request.ChatId));
         }
 
         var messageResult = chat.RemoveMessage(request.MessageId);
 
-        if (messageResult.IsFailure)
+        if (messageResult.IsFailure && messageResult.Error != DomainErrors.Message.NotFound(request.MessageId))
         {
             return Result.Failure<MessageResponse>(messageResult.Error);
         }
@@ -48,6 +48,8 @@ internal sealed class DeleteMessageCommandHandler : ICommandHandler<DeleteMessag
             messageResult.Value.AuthorId,
             messageResult.Value.Content);
 
-        return Result.Success(response);
+        return messageResult.IsSuccess 
+            ? Result.Success(response)
+            : Result.Failure<MessageResponse>(messageResult.Error);
     }
 }

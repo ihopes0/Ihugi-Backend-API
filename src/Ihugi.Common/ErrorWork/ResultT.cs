@@ -1,19 +1,19 @@
 namespace Ihugi.Common.ErrorWork;
 
 /// <summary>
-/// Обобщенный результат
+/// Generic Result type
 /// </summary>
-/// <typeparam name="TValue">Тип возвращаемого значения</typeparam>
+/// <typeparam name="TValue">Resulted operation response value type</typeparam>
 public class Result<TValue> : Result
 {
     private readonly TValue? _value;
     
     /// <summary>
-    /// .ctor
+    /// Initializes a new instance of Result
     /// </summary>
-    /// <param name="value">Возвращаемое значение</param>
-    /// <param name="isSuccess">Успешность выполненной операции</param>
-    /// <param name="error">Ошибка</param>
+    /// <param name="value">Returned value</param>
+    /// <param name="isSuccess">Shows status of the operation</param>
+    /// <param name="error">Error</param>
     protected internal Result(TValue? value, bool isSuccess, Error error) : base(isSuccess, error)
     {
         _value = value;
@@ -21,10 +21,10 @@ public class Result<TValue> : Result
 
     public TValue? Value => IsSuccess
         ? _value
-        : throw new InvalidOperationException("Невозможно получить доступ к значению неудачного результата.");
+        : default;
 
     /// <summary>
-    /// Присвоение конструктору обобщенного результата статичный метод обычного результата
+    /// Create a new Result type object instance
     /// </summary>
     /// <param name="value">Возвращаемое значение</param>
     public static implicit operator Result<TValue>(TValue? value) => Create(value);

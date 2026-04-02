@@ -22,7 +22,7 @@ internal sealed class CreateUserCommandHandler : ICommandHandler<CreateUserComma
     {
         if (!await _userRepository.IsEmailUniqueAsync(request.Email, cancellationToken))
         {
-            return Result.Failure<CreateUserResponse>(DomainErrors.User.EmailAlreadyInUse);
+            return Result.Failure<CreateUserResponse>(DomainErrors.User.EmailAlreadyInUse(request.Email));
         }
         
         var user = User.Create(
@@ -37,7 +37,8 @@ internal sealed class CreateUserCommandHandler : ICommandHandler<CreateUserComma
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var response = new CreateUserResponse(user.Id, user.Name, user.Password, user.Email);
+        // TODO: change to UserResponse
+        var response = new CreateUserResponse(user.Id, user.Name, "", user.Email);
 
         return Result.Success(response);
     }

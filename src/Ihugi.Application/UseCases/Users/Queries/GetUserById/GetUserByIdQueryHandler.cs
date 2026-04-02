@@ -22,10 +22,10 @@ internal sealed class GetUserByIdQueryHandler : IQueryHandler<GetUserByIdQuery, 
 
         if (user is null)
         {
-            return Result.Failure<UserResponse>(DomainErrors.User.NotFound);
+            return Result.Failure<UserResponse>(DomainErrors.User.NotFound(request.UserId));
         }
 
-        var response = new UserResponse(user.Id, user.Name);
+        var response = new UserResponse(user.Id, user.Name, user.Email);
 
         return Result.Success(response);
     }

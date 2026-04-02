@@ -32,7 +32,7 @@ internal sealed class DeleteChatByIdCommandHandler : ICommandHandler<DeleteChatB
 
         if (chat is null)
         {
-            return Result.Failure<DeletedChatResponse>(DomainErrors.Chat.NotFound);
+            return Result.Failure<DeletedChatResponse>(DomainErrors.Chat.NotFound(request.Id));
         }
         
         _chatRepository.Delete(chat);

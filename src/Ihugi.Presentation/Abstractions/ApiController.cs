@@ -1,15 +1,28 @@
+using Ihugi.Common.ErrorWork;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ihugi.Presentation.Abstractions;
 
-// TODO: XML docs
-public abstract class ApiController : ControllerBase
+/// <summary>
+/// Basic API controller class.
+/// </summary>
+/// <param name="sender">A sender to handle incoming requests</param>
+public abstract class ApiController(ISender sender) : ControllerBase
 {
-    protected readonly ISender Sender;
+    /// <summary>
+    /// MediatR sender to handle incoming requests
+    /// </summary>
+    protected readonly ISender Sender = sender;
 
-    protected ApiController(ISender sender)
+    protected ProblemDetails CreateApiProblem(Error error, int statusCode, string? title = null)
     {
-        Sender = sender;
+        return new ProblemDetails
+        {
+            Title = title ?? error.Code,
+            Detail = error.Message,
+            Status = statusCode,
+            Instance = HttpContext.Request.Path
+        };
     }
 }

@@ -24,7 +24,7 @@ internal sealed class UpdateUserPutCommandHandler : ICommandHandler<UpdateUserPu
 
         if (user is null)
         {
-            return Result.Failure<UpdateUserPutResponse>(DomainErrors.User.NotFound);
+            return Result.Failure<UpdateUserPutResponse>(DomainErrors.User.NotFound(request.Id));
         }
 
         user.Update(

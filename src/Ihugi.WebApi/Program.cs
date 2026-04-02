@@ -1,3 +1,4 @@
+using System.Text;
 using Ihugi.Application;
 using Ihugi.Application.Abstractions;
 using Ihugi.Infrastructure;
@@ -11,6 +12,7 @@ using Ihugi.WebApi.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Quartz;
 using Serilog;
 
@@ -41,11 +43,11 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer();
-
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
 builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
+
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer();
 
 // TODO: Move to AddPresentation extension method
 builder.Services.AddControllers().AddApplicationPart(typeof(Ihugi.Presentation.AssemblyReference).Assembly);
@@ -130,7 +132,6 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapHub<ChatHub>("/chat");

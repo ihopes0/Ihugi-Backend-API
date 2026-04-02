@@ -32,7 +32,7 @@ public class Error : IEquatable<Error>
     public string Message { get; }
 
     /// <summary>
-    /// Код ошибки
+    /// Domain code of the error
     /// </summary>
     public string Code { get; }
 

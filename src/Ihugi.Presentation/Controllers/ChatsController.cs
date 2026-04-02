@@ -7,11 +7,14 @@ using Ihugi.Application.UseCases.Chats.Commands.DeleteMessage;
 using Ihugi.Application.UseCases.Chats.Commands.UpdateChatPut;
 using Ihugi.Application.UseCases.Chats.Queries.GetChatById;
 using Ihugi.Application.UseCases.Chats.Queries.GetChats;
-using Ihugi.Common.ErrorWork;
+using Ihugi.Application.UseCases.Chats.Queries.GetMessages;
 using Ihugi.Domain.Errors;
 using Ihugi.Presentation.Abstractions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Ihugi.Presentation.Controllers;
 
@@ -20,11 +23,10 @@ namespace Ihugi.Presentation.Controllers;
 [Produces(MediaTypeNames.Application.Json)]
 [Consumes(MediaTypeNames.Application.Json)]
 [ApiController]
-public class ChatsController : ApiController
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[Authorize]
+public class ChatsController(ISender sender, ILogger<ChatsController> logger) : ApiController(sender)
 {
-    public ChatsController(ISender sender) : base(sender)
-    {
-    }
 
     /// <summary>
     /// Получить все чаты
@@ -32,44 +34,76 @@ public class ChatsController : ApiController
     /// <param name="cancellationToken">Токен отмены операции</param>
     [HttpGet]
     [ProducesResponseType(typeof(ChatsResponse), 200)]
+    [ProducesResponseType(typeof(ProblemDetails), 400)]
     public async Task<IActionResult> GetChats(CancellationToken cancellationToken)
     {
         var query = new GetChatsQuery();
 
         var result = await Sender.Send(query, cancellationToken);
 
+        if (result.IsFailure)
+        {
+            var apiProblem = CreateApiProblem(result.Error, 400, "Error getting chats.");
+            logger.LogInformation("{@ApiProblem}", apiProblem);
+            return StatusCode(apiProblem.Status!.Value, apiProblem);
+        }
+
         return Ok(result.Value);
     }
 
     /// <summary>
-    /// Получить чат по Id
+    /// Get not deleted chat by its Id
     /// </summary>
-    /// <param name="id">Идентификатор чата</param>
-    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <param name="id">Chat unique ID</param>
+    /// <param name="cancellationToken">Cancellation token</param>
     [HttpGet]
     [Route("{id:guid}")]
-    public async Task<IActionResult> GetChatById(Guid id, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ChatsResponse), 200)]
+    [ProducesResponseType(typeof(ProblemDetails), 404)]
+    public async Task<ActionResult<ChatResponse>> GetChatById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetChatByIdQuery(id);
 
         var result = await Sender.Send(query, cancellationToken);
 
-        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+        if (result.IsFailure)
+        {
+            int statusCode;
+            if (result.Error == DomainErrors.Chat.NotFound(id))
+                statusCode = 404;
+            else
+                statusCode = 400;
+            
+            var apiProblem = CreateApiProblem(result.Error, statusCode, "Error getting chat.");
+            logger.LogInformation("{@ApiProblem}", apiProblem);
+            return StatusCode(apiProblem.Status!.Value, apiProblem);
+        }
+
+        return Ok(result.Value);
     }
 
     /// <summary>
-    /// Создать чат
+    /// Create new chat
     /// </summary>
-    /// <param name="request">Тело запроса</param>
-    /// <param name="cancellationToken">Токен отмены операции</param>
+    /// <param name="request">Request body payload</param>
+    /// <param name="cancellationToken">Cancellation token</param>
     [HttpPost]
-    [ProducesResponseType(typeof(ChatResponse), 200)]
-    public async Task<IActionResult> CreateChat([FromBody] CreateChatCommand request,
+    [ProducesResponseType(typeof(ChatResponse), 201)]
+    [ProducesResponseType(typeof(ProblemDetails), 400)]
+    public async Task<ActionResult<ChatResponse>> CreateChat(
+        [FromBody] CreateChatCommand request,
         CancellationToken cancellationToken)
     {
         var result = await Sender.Send(request, cancellationToken);
 
-        return Ok(result.Value);
+        if (result.IsFailure)
+        {
+            var apiProblem = CreateApiProblem(result.Error, 400, "Error creating chat.");
+            logger.LogInformation("{@ApiProblem}", apiProblem);
+            return StatusCode(apiProblem.Status!.Value, apiProblem);
+        }
+
+        return Created($"api/chats/{result.Value?.Id}", result.Value);
     }
 
     /// <summary>
@@ -79,7 +113,7 @@ public class ChatsController : ApiController
     /// <param name="cancellationToken">Токен отмены операции</param>
     [HttpDelete]
     [Route("{id:guid}")]
-    [ProducesResponseType(typeof(DeletedChatResponse), 200)]
+    [ProducesResponseType(200)]
     [ProducesResponseType(204)]
     public async Task<IActionResult> DeleteChatById(Guid id, CancellationToken cancellationToken)
     {
@@ -87,7 +121,14 @@ public class ChatsController : ApiController
 
         var result = await Sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? Ok(result.Value) : NoContent();
+        if (result.IsFailure && result.Error != DomainErrors.Chat.NotFound(id))
+        {
+            var apiProblem = CreateApiProblem(result.Error, 400, "Error deleting chat.");
+            logger.LogInformation("{@ApiProblem}", apiProblem);
+            return StatusCode(apiProblem.Status!.Value, apiProblem);
+        }
+
+        return result.IsSuccess ? Ok() : NoContent();
     }
 
 
@@ -100,7 +141,7 @@ public class ChatsController : ApiController
     [HttpPut]
     [Route("{id:guid}")]
     [ProducesResponseType(typeof(ChatResponse), 200)]
-    [ProducesResponseType(typeof(Error), 404)]
+    [ProducesResponseType(typeof(ProblemDetails), 400)]
     public async Task<IActionResult> UpdateChatPut(
         Guid id,
         [FromBody] UpdateChatPutRequest request,
@@ -110,7 +151,35 @@ public class ChatsController : ApiController
 
         var result = await Sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+        if (result.IsFailure)
+        {
+            var apiProblem = CreateApiProblem(result.Error, 400, "Error updating chat via PUT.");
+            logger.LogInformation("{@ApiProblem}", apiProblem);
+            return StatusCode(apiProblem.Status!.Value, apiProblem);
+        }
+
+        return Ok(result.Value);
+    }
+
+    [HttpGet("id:guid/messages")]
+    [ProducesResponseType(typeof(List<MessageResponse>), 200)]
+    [ProducesResponseType(typeof(ProblemDetails), 400)]
+    public async Task<ActionResult<List<MessageResponse>>> GetMessages(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetMessagesQuery(id);
+
+        var result = await Sender.Send(query, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            var apiProblem = CreateApiProblem(result.Error, 400, "Error getting messages.");
+            logger.LogInformation("{@ApiProblem}", apiProblem);
+            return StatusCode(apiProblem.Status!.Value, apiProblem);
+        }
+
+        return Ok(result.Value);
     }
 
     /// <summary>
@@ -121,8 +190,8 @@ public class ChatsController : ApiController
     /// <param name="cancellationToken">Токен отмены операции</param>
     [HttpPost]
     [Route("{id:guid}:post-message")]
-    [ProducesResponseType(typeof(MessageResponse), 200)]
-    [ProducesResponseType(typeof(Error), 400)]
+    [ProducesResponseType(typeof(MessageResponse), 201)]
+    [ProducesResponseType(typeof(ProblemDetails), 400)]
     public async Task<IActionResult> CreateMessage(
         Guid id,
         [FromBody] CreateMessageRequest request,
@@ -135,14 +204,22 @@ public class ChatsController : ApiController
 
         var result = await Sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        if (result.IsFailure)
+        {
+            var apiProblem = CreateApiProblem(result.Error, 400, "Error creating message.");
+            logger.LogError("{@ApiProblem}", apiProblem);
+            return StatusCode(apiProblem.Status!.Value, apiProblem);
+        }
+
+        return Created($"api/chats/{id}/messages", result.Value);
     }
 
     [HttpDelete]
     [Route("{id:guid}:delete-message")]
-    [ProducesResponseType(typeof(MessageResponse), 200)]
-    [ProducesResponseType(typeof(Error), 400)]
+    [ProducesResponseType(200)]
     [ProducesResponseType(204)]
+    [ProducesResponseType(typeof(ProblemDetails), 400)]
+    [ProducesResponseType(typeof(ProblemDetails), 404)]
     public async Task<IActionResult> DeleteMessage(
         Guid id,
         [FromBody] DeleteMessageRequest request,
@@ -154,11 +231,21 @@ public class ChatsController : ApiController
 
         var result = await Sender.Send(command, cancellationToken);
 
-        if (result.IsFailure && result.Error == DomainErrors.Chat.NotFound)
+        int statusCode;
+
+        if (result.IsFailure && result.Error != DomainErrors.Message.NotFound(request.MessageId))
         {
-            return BadRequest(result.Error);
+            if (result.Error == DomainErrors.Chat.NotFound(id))
+                statusCode = 404;
+            else
+                statusCode = 400;
+
+            var apiProblem = CreateApiProblem(result.Error, statusCode, "Error deleting message.");
+            
+            logger.LogError("{@ApiProblem}", apiProblem);
+            return StatusCode(statusCode, apiProblem);
         }
 
-        return result.IsSuccess ? Ok(result.Value) : NoContent();
+        return result.IsSuccess ? Ok() : NoContent();
     }
 }

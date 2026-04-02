@@ -21,7 +21,7 @@ internal sealed class GetUsersQueryHandler : IQueryHandler<GetUsersQuery, GetUse
 
         var response = new GetUsersResponse(
             users
-                .Select(u => new UserResponse(u.Id, u.Name))
+                .Select(u => new UserResponse(u.Id, u.Name, u.Email))
                 .ToArray());
 
         return Result.Success(response);

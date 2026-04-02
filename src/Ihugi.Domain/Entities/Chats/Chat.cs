@@ -125,7 +125,7 @@ public class Chat : AggregateRoot
 
         if (message is null)
         {
-            return Result.Failure<Message>(DomainErrors.Message.NotFound);
+            return Result.Failure<Message>(DomainErrors.Message.NotFound(messageId));
         }
 
         _messages.Remove(message);

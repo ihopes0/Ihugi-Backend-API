@@ -28,7 +28,7 @@ internal sealed class GetChatByIdQueryHandler : IQueryHandler<GetChatByIdQuery, 
 
         if (chat is null)
         {
-            return Result.Failure<ChatResponse>(DomainErrors.Chat.NotFound);
+            return Result.Failure<ChatResponse>(DomainErrors.Chat.NotFound(request.Id));
         }
 
         var response = new ChatResponse(

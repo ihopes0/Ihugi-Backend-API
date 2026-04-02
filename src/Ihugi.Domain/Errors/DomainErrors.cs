@@ -7,46 +7,46 @@ public static class DomainErrors
 {
     public static class User
     {
-        public static readonly Error NotFound = new Error(
+        public static Error NotFound(Guid id) => new(
             "User.NotFound",
-            "Пользователя с таким ID не существует");
+            $"User with ID {id} not found");
 
-        public static readonly Error NoContent = new Error(
+        public static Error NoContent(Guid id) => new(
             "User.NoContent",
-            "Пользователя с таким ID не существует");
+            $"User with ID {id} has already been deleted.");
 
-        public static readonly Error EmailAlreadyInUse = new Error(
+        public static Error EmailAlreadyInUse(string email) => new(
             "User.EmailAlreadyInUse",
-            "Пользователь с таким email уже существует.");
+            $"Email {email} is already taken.");
 
-        public static readonly Error InvalidCredentials = new Error(
+        public static Error InvalidCredentials = new(
             "User.InvalidCredentials",
-            "Введеные логин/электронная почта или пароль неверны.");
+            "Login or password are incorrect.");
     }
 
     public static class Chat
     {
-        public static readonly Error NotFound = new Error(
+        public static Error NotFound(Guid id) => new(
             "Chat.NotFound",
-            "Чата с таким ID не существует");
+            $"Chat with ID {id} not found.");
 
-        public static readonly Error UserNotMember = new Error(
+        public static Error UserNotMember(Guid id, string chatName) => new(
             "Chat.UserNotMember",
-            "Пользователь не является участником чата");
+            $"User with ID {id} is not a member of the chat {chatName}");
     }
 
     public static class Message
     {
-        public static readonly Error EmptyMessage = new Error(
+        public static Error EmptyMessage => new(
             "Message.EmptyMessage",
-            "Сообщение не может быть пустым или содержать только пробелы");
+            "Message cannot be empty or contain only of whitespaces.");
 
-        public static readonly Error NotFound = new Error(
+        public static Error NotFound(Guid id) => new(
             "Message.NotFound",
-            "Сообщение с таким ID не найдено.");
+            "Message with ID {id} not found");
 
-        public static readonly Error NotCreated = new Error(
+        public static readonly Error NotCreated = new(
             "Message.NotCreated",
-            "Сообщение не было создано.");
+            "Message creation failed.");
     }
 }

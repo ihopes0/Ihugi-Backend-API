@@ -30,7 +30,7 @@ internal sealed class UpdateChatPutCommandHandler : ICommandHandler<UpdateChatPu
 
         if (chat is null)
         {
-            return Result.Failure<ChatResponse>(DomainErrors.Chat.NotFound);
+            return Result.Failure<ChatResponse>(DomainErrors.Chat.NotFound(request.Id));
         }
         
         chat.Update(request.Name);

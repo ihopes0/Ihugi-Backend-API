@@ -26,5 +26,9 @@
             <_Parameter1>Ihugi.Application.UnitTests</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="UseCases/Chats/Queries/GetMessages/" />
+    </ItemGroup>
 
 </Project>
