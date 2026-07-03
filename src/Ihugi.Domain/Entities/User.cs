@@ -12,12 +12,14 @@ public sealed class User : AggregateRoot
     private readonly List<Message> _messages = new();
     private readonly List<ChatMember> _chats = new();
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     /// <summary>
     /// Конструктор для EF Core
     /// </summary>
     private User()
     {
     }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     /// <summary>
     /// .ctor
