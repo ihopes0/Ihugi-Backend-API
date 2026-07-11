@@ -20,8 +20,7 @@ public interface IRepository<TEntity>
     /// Получить все записи
     /// </summary>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Добавить запись

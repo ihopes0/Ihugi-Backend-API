@@ -26,7 +26,7 @@ public sealed class RtcService<THub> : IRealTimeCommunicationService
 
     public async Task SendMessageToGroupAsync(string groupName, string userName, string message)
     {
-        await _hubContext.Clients.Group(groupName).SendAsync(SignalRConstants.ReceiveMessage, userName, message);
+        await _hubContext.Clients.Group(groupName).SendAsync(SignalRConstants.ReceiveMessageAsync, userName, message);
     }
 
     // TODO: AddToGroupAsync

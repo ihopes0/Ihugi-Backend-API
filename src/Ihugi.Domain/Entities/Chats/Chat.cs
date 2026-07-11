@@ -45,12 +45,12 @@ public class Chat : AggregateRoot
     /// <summary>
     /// Сообщения, относящиеся к чату
     /// </summary>
-    public IReadOnlyCollection<Message> Messages => _messages.AsReadOnly();
+    public IReadOnlyCollection<Message> Messages => _messages;
 
     /// <summary>
     /// Пользователи в чате
     /// </summary>
-    public IReadOnlyCollection<ChatMember> Members => _members.AsReadOnly();
+    public IReadOnlyCollection<ChatMember> Members => _members;
 
     /// <summary>
     /// Статичный метод для создания экземпляра Chat

@@ -33,7 +33,7 @@ internal sealed class CreateMessageCommandHandler(
             return Result.Failure<MessageResponse>(DomainErrors.Chat.NotFound(request.ChatId));
         }
 
-        if (chat.Members.All(cm => cm.UserId == request.AuthorId))
+        if (!chat.Members.Any(cm => cm.UserId == request.AuthorId))
         {
             return Result.Failure<MessageResponse>(DomainErrors.Chat.UserNotMember(request.AuthorId, chat.Name));
         }

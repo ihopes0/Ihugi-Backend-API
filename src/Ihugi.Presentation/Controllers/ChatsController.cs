@@ -35,10 +35,8 @@ public class ChatsController(ISender sender, ILogger<ChatsController> logger) : 
     [HttpGet]
     [ProducesResponseType(typeof(ChatsResponse), 200)]
     [ProducesResponseType(typeof(ProblemDetails), 400)]
-    public async Task<IActionResult> GetChats(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetChats([FromQuery] GetChatsQuery query, CancellationToken cancellationToken)
     {
-        var query = new GetChatsQuery();
-
         var result = await Sender.Send(query, cancellationToken);
 
         if (result.IsFailure)

@@ -6,4 +6,5 @@ namespace Ihugi.Application.UseCases.Chats.Queries.GetChats;
 /// <summary>
 /// Запрос для получения всех чатов
 /// </summary>
-public sealed record GetChatsQuery() : IQuery<ChatsResponse>;
+/// <param name="WithMembers">Include Chat Members in response</param>
+public sealed record GetChatsQuery(bool WithMembers) : IQuery<ChatsResponse>;

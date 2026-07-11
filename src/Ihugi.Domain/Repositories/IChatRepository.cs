@@ -22,4 +22,10 @@ public interface IChatRepository : IRepository<Chat>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<Chat?> GetByIdWithMembersAsync(Guid id, CancellationToken cancellationToken);
+
+     /// <summary>
+    /// Gets all chats with its members
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token</param>
+    Task<IReadOnlyList<Chat>> GetAllWithMembersAsync(CancellationToken cancellationToken = default);
 }

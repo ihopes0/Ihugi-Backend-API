@@ -14,7 +14,7 @@ public sealed class GetMessagesQueryHandler(
 {
     public async Task<Result<List<MessageResponse>>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
     {
-        var chat = await chatRepository.GetByIdAsync(request.ChatId, cancellationToken);
+        var chat = await chatRepository.GetByIdWithMessagesAsync(request.ChatId, cancellationToken);
 
         if (chat is null)
         {

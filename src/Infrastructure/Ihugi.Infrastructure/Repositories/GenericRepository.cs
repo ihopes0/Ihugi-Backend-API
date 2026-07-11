@@ -24,7 +24,7 @@ internal abstract class GenericRepository<TEntity> : IRepository<TEntity> where 
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await DbSet.ToListAsync(cancellationToken: cancellationToken);
     }
