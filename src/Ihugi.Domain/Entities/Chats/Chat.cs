@@ -1,4 +1,5 @@
 using Ihugi.Common.ErrorWork;
+using Ihugi.Domain.DomainEvents;
 using Ihugi.Domain.Errors;
 using Ihugi.Domain.Primitives;
 
@@ -81,6 +82,7 @@ public class Chat : AggregateRoot
     public void Update(string name)
     {
         Name = name;
+        RaiseDomainEvent(new ChatUpdatedDomainEvent(Id, Name));
     }
 
     public void AddMember(Guid userId)
